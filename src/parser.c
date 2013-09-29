@@ -310,7 +310,6 @@ void download_url(char *url, char *loc)
     }
     
     outfilename = real_loc;
-    printf("loc: %s\n", outfilename);
     curl = curl_easy_init();
     
     if (curl) {

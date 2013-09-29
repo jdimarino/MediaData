@@ -198,10 +198,6 @@ void button_clicked(GtkWidget *widget, gpointer data)
 void path_changed(GtkWidget *widget, gpointer data) 
 {
     path = gtk_file_chooser_get_uri(GTK_FILE_CHOOSER(widget));
-
-
-    g_print("path: %s\n", path);
-
 }
 
 int main(int argc, char **argv)

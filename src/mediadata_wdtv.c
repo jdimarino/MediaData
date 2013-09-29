@@ -59,10 +59,8 @@ char* parse_path(episode *episode, char* series_title, char* path,
     
     sprintf(zero_episode_num, "%d%s", 0, episode_num);
     sprintf(zero_season_num, "%d%s", 0, season_num);
-    printf("%s\n",format);
     /* Parse user-specified filename format */
     while ((cur = format[i++])!='\0') {
-        printf("%d:%c:%d\n", i-1,cur,cur);
         if (cur == '+') {
             if (format[i]=='*') {
                 if (format[i+1]=='S') {
@@ -163,7 +161,6 @@ char* parse_path(episode *episode, char* series_title, char* path,
     #endif*/
 
     sprintf(episode_path, "%s%s%s", path, slash, episode_fn);
-    printf("episode_path: %s\n", episode_path);
     free(zero_episode_num);
     free(zero_season_num);
     free(episode_fn);
@@ -209,8 +206,6 @@ int copy_file(char *old_filename, char  *new_filename)
     }
 
     new_filename = real_loc_new;
-    printf("old_filename: %s", old_filename);
-    printf("new_filename: %s", new_filename);
     ptr_old = fopen(old_filename, "rb");
     ptr_new = fopen(new_filename, "wb");
 
@@ -581,7 +576,6 @@ int main(int argc, char **argv)
         }
     }
 
-    printf("%s\n",output_dir);
     if (s_num && e_num && !complete) {
         write_ep(parsed_series, s_num, e_num, output_dir, format);
     } else if (s_num) {
