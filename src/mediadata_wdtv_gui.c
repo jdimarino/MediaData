@@ -135,7 +135,6 @@ void button_clicked(GtkWidget *widget, gpointer data)
         format = (gchar*)calloc(10,sizeof(gchar));
         sprintf(format,"+T.+^S+^E");
     }
-
     
     if (strcmp(season_num,"") && strcmp(episode_num,"") && !complete) {
         sprintf(cmd, "%smediadata_wdtv -i %s %s -l %s -s %s -e %s -f %s -o %s",
@@ -173,6 +172,10 @@ void button_clicked(GtkWidget *widget, gpointer data)
 void path_changed(GtkWidget *widget, gpointer data) 
 {
     path = gtk_file_chooser_get_uri(GTK_FILE_CHOOSER(widget));
+
+
+    g_print("path: %s\n", path);
+
 }
 
 int main(int argc, char **argv)

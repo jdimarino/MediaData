@@ -496,6 +496,8 @@ void write_series(series* parsed_series, char *path, char *format)
 #ifdef CLI
 int main(int argc, char **argv)
 {
+    int i, j;
+    char cur, runner;
     int opt;
     char  *s_num, *e_num;
     MYBOOL complete = False;
@@ -542,6 +544,25 @@ int main(int argc, char **argv)
         exit(EXIT_FAILURE);
     }
 
+    i=0;
+    /* Parse user-specified filename format */
+    while ((cur = output_dir[i++])!='\0') {
+        if (cur == '%') {
+            if (output_dir[i]=='2') {
+                if (output_dir[i+1]=='0') {
+                    output_dir[i-1] = ' ';
+                    j = i;
+                    while ((runner = output_dir[j])!='\0') {
+                        output_dir[j] = output_dir[j+2];
+                        output_dir[j+1] = output_dir[j+3];
+                        j+=2;
+                    }
+                }
+            }
+        }
+    }
+
+    printf("%s\n",output_dir);
     if (s_num && e_num && !complete) {
         write_ep(parsed_series, s_num, e_num, output_dir, format);
     } else if (s_num) {
