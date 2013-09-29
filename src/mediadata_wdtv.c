@@ -59,11 +59,12 @@ char* parse_path(episode *episode, char* series_title, char* path,
     
     sprintf(zero_episode_num, "%d%s", 0, episode_num);
     sprintf(zero_season_num, "%d%s", 0, season_num);
-    
+    printf("%s\n",format);
     /* Parse user-specified filename format */
     while ((cur = format[i++])!='\0') {
+        printf("%d:%c:%d\n", i-1,cur,cur);
         if (cur == '+') {
-            if (format[i]=='^') {
+            if (format[i]=='*') {
                 if (format[i+1]=='S') {
                     /* Place Season Number here with zero before */
                     strcat(episode_fn, "S");
@@ -114,7 +115,7 @@ char* parse_path(episode *episode, char* series_title, char* path,
                 i++;
             } else if (format[i]=='e') {
                 /* Place episode number here */
-                strcat(episode_fn, "E");
+                strcat(episode_fn, "e");
                 strcat(episode_fn, episode_num);
                 i++;
             } else if (format[i]=='T') {
@@ -506,7 +507,7 @@ int main(int argc, char **argv)
     char *output_dir;
     MYBOOL dvd_order = False;
     series *parsed_series;
-    char *format = "+T.+^S+^E";
+    char *format = "+T.+*S+*E";
     
     pstr = NULL;
     lang = "en";
@@ -545,7 +546,7 @@ int main(int argc, char **argv)
     }
 
     i=0;
-    /* Parse user-specified filename format */
+    /* Replace "%20" with spaces in path */
     while ((cur = output_dir[i++])!='\0') {
         if (cur == '%') {
             if (output_dir[i]=='2') {
@@ -555,6 +556,24 @@ int main(int argc, char **argv)
                     while ((runner = output_dir[j])!='\0') {
                         output_dir[j] = output_dir[j+2];
                         output_dir[j+1] = output_dir[j+3];
+                        j+=2;
+                    }
+                }
+            }
+        }
+    }
+
+    i = 0;
+    /* Replace "%20" with spaces in format */
+    while ((cur = format[i++])!='\0') {
+        if (cur == '%') {
+            if (format[i]=='2') {
+                if (format[i+1]=='0') {
+                    format[i-1] = ' ';
+                    j = i;
+                    while ((runner = format[j])!='\0') {
+                        format[j] = format[j+2];
+                        format[j+1] = format[j+3];
                         j+=2;
                     }
                 }

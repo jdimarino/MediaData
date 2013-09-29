@@ -102,6 +102,8 @@ gchar* determine_language_abrev(gchar* lang) {
 
 void button_clicked(GtkWidget *widget, gpointer data)
 {
+    int new_string_length;
+    char *c, *c1, *c2, *qstr;
     GtkWidget **filters = (GtkWidget**)data;
     char* cmd = (char*)calloc(3000, sizeof(char));
     gchar *series_ID = g_strdup(gtk_entry_get_text(GTK_ENTRY(filters[0])));
@@ -126,20 +128,44 @@ void button_clicked(GtkWidget *widget, gpointer data)
     if (!(strcmp(path,""))) {
         sprintf(path, "./");
         #if defined(__MINGW32__) || defined(WIN32)
-        sprintf(path, "%CD%");
+        sprintf(path, "%%CD%%");
         #endif
     }
 
     if (!(strcmp(format, ""))) {
         g_free(format);
         format = (gchar*)calloc(10,sizeof(gchar));
-        sprintf(format,"+T.+^S+^E");
+        sprintf(format,"+T.+*S+*E");
     }
     
+    /* Replace spaces in format with "%20" */
+    new_string_length = 0;
+    for (c = format; *c != '\0'; c++) {
+        if (*c == ' ') new_string_length += 2;
+        new_string_length++;
+    }
+    qstr = malloc((new_string_length + 1) * sizeof qstr[0]);
+    for (c1 = format, c2 = qstr; *c1 != '\0'; c1++) {
+        if (*c1 == ' ') {
+            c2[0] = '%';
+            c2[1] = '2';
+            c2[2] = '0';
+            c2 += 3;
+        }else{
+            *c2 = *c1;
+            c2++;
+        }
+    }
+    *c2 = '\0';
+
+    g_free(format);
+
+    format = qstr;
+
     if (strcmp(season_num,"") && strcmp(episode_num,"") && !complete) {
-        sprintf(cmd, "%smediadata_wdtv -i %s %s -l %s -s %s -e %s -f %s -o %s",
+        sprintf(cmd, "%smediadata_wdtv -i %s %s -l %s -s %s -e %s -o %s -f %s",
                 cwd, series_ID, dvd_order, abrev, season_num, episode_num,
-                format, path);
+                path, format);
         
     } else if (strcmp(season_num,"") && !(strcmp(episode_num,"")) && 
         !complete) {
@@ -190,7 +216,7 @@ int main(int argc, char **argv)
     mediadata = gtk_builder_new();
 
     path = (gchar*)calloc(2048,sizeof(gchar));
-
+    path[0] = '\0';
     gtk_builder_add_from_file (mediadata, "mediadata.glade", &result);
 
     if (result!=NULL) {

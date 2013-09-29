@@ -385,7 +385,7 @@
                     <property name="can_focus">True</property>
                     <property name="invisible_char">●</property>
                     <property name="width_chars">28</property>
-                    <property name="placeholder_text">+T.+^S+^E</property>
+                    <property name="placeholder_text">+T.+*S+*E</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
