@@ -154,7 +154,7 @@ void free_episode(episode* episode_to_free)
 void in_place_adjust_season(season* season_to_adjust) {
     int num_eps = season_to_adjust->num_episodes;
     int complete = 0; int pos = 0; int runner = 0;
-    
+
     while (complete < num_eps) {
         if (season_to_adjust->episodes[pos++]) {
             complete++;
@@ -929,8 +929,14 @@ int add_episode_to_series(episode *ep, series *ser) {
         ser->num_seasons++;
         ser->seasons[season_num]->num_episodes = 0;
     }
+    
+    while(ser->seasons[season_num]->episodes[episode_num]){
+        episode_num++;
+    }
+    
     ser->seasons[season_num]->episodes[episode_num] = ep;
     ser->seasons[season_num]->num_episodes++;
+
     return 0;
 }
 
@@ -960,7 +966,7 @@ series* parse(char* series_ID, char* lang, MYBOOL dvd_order) {
     * library used.
     */
     LIBXML_TEST_VERSION
-    
+    xmlSubstituteEntitiesDefault(0);
     for (i = 0; i < MAX_NUM_SEASONS; i++) {
         new_series->seasons[i] = NULL;
     }
@@ -983,7 +989,7 @@ series* parse(char* series_ID, char* lang, MYBOOL dvd_order) {
         * have been allocated by the parser.
         */
         xmlCleanupParser();
-  
+        xmlSubstituteEntitiesDefault(1);
         return NULL;
     }
 
@@ -1111,24 +1117,20 @@ series* parse(char* series_ID, char* lang, MYBOOL dvd_order) {
                     for (j = 0; j < MAX_NUM_DIRECTORS; j++) {
                         new_episode->directors[j] = NULL;
                     }
+
                     pch = (char *)xmlNodeGetContent(cur_ep_node);
-                    if(!atof((char*)pch)) {
+
+                    new_episode->directors[MAX_NUM_DIRECTORS-1] = pch;
+                    director_index = 0;
+                    if(!(pch = strtok (pch,"|"))) {
                         xmlFree(pch);
                         continue;
                     }
                     
-                    new_episode->directors[MAX_NUM_DIRECTORS-1] = pch;
-                    director_index = 0;
-                    if((pch = strtok (pch,"|"))) {
+                    while (pch != NULL) {
                         new_episode->directors[director_index] = pch;
                         director_index++;
-                    } else {
-                        xmlFree(pch);
-                        continue;
-                    }
-                    while ((pch = strtok (NULL, "|"))) {
-                        new_episode->directors[director_index] = pch;
-                        director_index++;
+                        pch = strtok (NULL, "|");
                     }	
                 } else if (strcmp((char*)cur_ep_node->name, "GuestStars") 
                     == 0) {
@@ -1140,22 +1142,17 @@ series* parse(char* series_ID, char* lang, MYBOOL dvd_order) {
                         new_episode->actors[j] = NULL;
                     }
                     pch = (char *)xmlNodeGetContent(cur_ep_node);
-                    if(!atof((char*)pch)) {
-                        xmlFree(pch);
-                        continue;
-                    }
+
                     new_episode->actors[MAX_NUM_ACTORS-1] = pch;
                     actor_index = 0;
-                    if((pch = strtok (pch,"|"))) {
-                        new_episode->actors[actor_index] = pch;
-                        actor_index++;
-                    } else {
+                    if(!(pch = strtok (pch,"|"))) {
                         xmlFree(pch);
-                        continue;
+                        continue;                        
                     }
-                    while ((pch = strtok (pch,"|"))) {
+                    while (pch != NULL) {
                         new_episode->actors[actor_index] = pch;
                         actor_index++;
+                        pch = strtok (NULL,"|");
                     }  	
                 } else if (strcmp((char*)cur_ep_node->name, "filename") == 0) {
                     char *backdrop_URL = (char *) malloc(MAX_URL_LEN * 
@@ -1191,7 +1188,7 @@ series* parse(char* series_ID, char* lang, MYBOOL dvd_order) {
         free(new_series);
         
         xmlCleanupParser();
-        
+        xmlSubstituteEntitiesDefault(1);
         return parse(series_ID, lang, False);
     } else if (new_series->num_seasons == 0) {
         printf("Invalid Series: No seasons found.\n");
@@ -1202,7 +1199,7 @@ series* parse(char* series_ID, char* lang, MYBOOL dvd_order) {
         free(new_series);
         
         xmlCleanupParser();
-        
+        xmlSubstituteEntitiesDefault(1);
         return NULL;
     } else {
         int j;
@@ -1218,7 +1215,7 @@ series* parse(char* series_ID, char* lang, MYBOOL dvd_order) {
         }
         
         xmlCleanupParser();
-
+        xmlSubstituteEntitiesDefault(1);
         return new_series;
     }
 }

@@ -75,7 +75,7 @@ MYBOOL write_episode(episode *episode_to_write,
     }
     
     /* Write newline */
-    rc = xmlTextWriterWriteFormatString(writer, "\n");
+    rc = xmlTextWriterWriteFormatRaw(writer, "\n");
     if (rc < 0) {
         printf("testXmlwriterFilename: Error at xmlTextWriterStartElement\n");
         return False;
@@ -99,7 +99,7 @@ MYBOOL write_episode(episode *episode_to_write,
         return False;
     }
     
-    rc = xmlTextWriterWriteFormatString(writer, "%s", 
+    rc = xmlTextWriterWriteFormatRaw(writer, "%s",
         series_info_to_write->series_ID);
     if (rc < 0) {
         printf("testXmlwriterFilename: Error at xmlTextWriterStartElement\n");
@@ -122,9 +122,9 @@ MYBOOL write_episode(episode *episode_to_write,
         printf("testXmlwriterFilename: Error at xmlTextWriterStartElement\n");
         return False;
     }
-    
-    rc = xmlTextWriterWriteFormatString(writer, "%s", 
-        episode_to_write->episode_name);
+
+    rc = xmlTextWriterWriteFormatRaw(writer, "%s%s - %s",
+            strtol(episode_to_write->episode_number, NULL, 10) < 10 ? "0" : "", episode_to_write->episode_number, episode_to_write->episode_name);
     if (rc < 0) {
         printf("testXmlwriterFilename: Error at xmlTextWriterStartElement\n");
         return False;
@@ -144,7 +144,7 @@ MYBOOL write_episode(episode *episode_to_write,
         return False;
     }
     
-    rc = xmlTextWriterWriteFormatString(writer, "%s", 
+    rc = xmlTextWriterWriteFormatRaw(writer, "%s",
         BAD_CAST series_info_to_write->series_name);
     if (rc < 0) {
         printf("testXmlwriterFilename: Error at xmlTextWriterStartElement\n");
@@ -165,7 +165,7 @@ MYBOOL write_episode(episode *episode_to_write,
         return False;
     }
 
-    rc = xmlTextWriterWriteFormatString(writer, "%s", 
+    rc = xmlTextWriterWriteFormatRaw(writer, "%s",
         series_info_to_write->mpaa);
     if (rc < 0) {
         printf("testXmlwriterFilename: Error at xmlTextWriterStartElement\n");
@@ -186,7 +186,7 @@ MYBOOL write_episode(episode *episode_to_write,
         return False;
     }
 
-    rc = xmlTextWriterWriteFormatString(writer, "%s", 
+    rc = xmlTextWriterWriteFormatRaw(writer, "%s",
         episode_to_write->episode_name);
     if (rc < 0) {
         printf("testXmlwriterFilename: Error at xmlTextWriterStartElement\n");
@@ -207,7 +207,7 @@ MYBOOL write_episode(episode *episode_to_write,
         return False;
     }
 
-    rc = xmlTextWriterWriteFormatString(writer, "%s", 
+    rc = xmlTextWriterWriteFormatRaw(writer, "%s",
         episode_to_write->season_number);
     if (rc < 0) {
         printf("testXmlwriterFilename: Error at xmlTextWriterStartElement\n");
@@ -228,7 +228,7 @@ MYBOOL write_episode(episode *episode_to_write,
         return False;
     }
 
-    rc = xmlTextWriterWriteFormatString(writer, "%s", 
+    rc = xmlTextWriterWriteFormatRaw(writer, "%s",
         episode_to_write->episode_number);
     if (rc < 0) {
         printf("testXmlwriterFilename: Error at xmlTextWriterStartElement\n");
@@ -249,7 +249,7 @@ MYBOOL write_episode(episode *episode_to_write,
         return False;
     }
 
-    rc = xmlTextWriterWriteFormatString(writer, "%s", 
+    rc = xmlTextWriterWriteFormatRaw(writer, "%s",
         episode_to_write->firstaired);
     if (rc < 0) {
         printf("testXmlwriterFilename: Error at xmlTextWriterStartElement\n");
@@ -270,7 +270,7 @@ MYBOOL write_episode(episode *episode_to_write,
         return False;
     }
 
-    rc = xmlTextWriterWriteFormatString(writer, "%s", 
+    rc = xmlTextWriterWriteFormatRaw(writer, "%s",
         episode_to_write->firstaired);
     if (rc < 0) {
         printf("testXmlwriterFilename: Error at xmlTextWriterStartElement\n");
@@ -296,7 +296,7 @@ MYBOOL write_episode(episode *episode_to_write,
             return False;
         }
         
-        rc = xmlTextWriterWriteFormatString(writer, "%s", 
+        rc = xmlTextWriterWriteFormatRaw(writer, "%s",
         cur_genre);
         if (rc < 0) {
             printf("testXmlwriterFilename:"
@@ -321,7 +321,7 @@ MYBOOL write_episode(episode *episode_to_write,
         return False;
     }
 
-    rc = xmlTextWriterWriteFormatString(writer, "%s", 
+    rc = xmlTextWriterWriteFormatRaw(writer, "%s",
         series_info_to_write->runtime);
     if (rc < 0) {
         printf("testXmlwriterFilename: Error at xmlTextWriterStartElement\n");
@@ -343,8 +343,8 @@ MYBOOL write_episode(episode *episode_to_write,
         return False;
     }
 
-    rc = xmlTextWriterWriteFormatString(writer, "%s", 
-        episode_to_write->overview);
+    rc = xmlTextWriterWriteFormatRaw(writer, "\"%s\"- %s",
+        episode_to_write->episode_name, episode_to_write->overview);
     if (rc < 0) {
         printf("testXmlwriterFilename: Error at xmlTextWriterStartElement\n");
         return False;
@@ -364,8 +364,8 @@ MYBOOL write_episode(episode *episode_to_write,
         return False;
     }
 
-    rc = xmlTextWriterWriteFormatString(writer, "%s", 
-        episode_to_write->overview);
+    rc = xmlTextWriterWriteFormatRaw(writer, "\"%s\"- %s",
+        episode_to_write->episode_name, episode_to_write->overview);
     if (rc < 0) {
         printf("testXmlwriterFilename: Error at xmlTextWriterStartElement\n");
         return False;
@@ -380,16 +380,25 @@ MYBOOL write_episode(episode *episode_to_write,
 
     i = -1;
     
+    
+    
+    /* Write the "director" element */
+    rc = xmlTextWriterStartElement(writer, BAD_CAST "director");
+    if (rc < 0) {
+        printf("testXmlwriterFilename: Error at xmlTextWriterStartElement\n");
+        return False;
+    }
+
+    rc = xmlTextWriterWriteFormatRaw(writer, "%s",
+            episode_to_write->directors[++i]);
+    if (rc < 0) {
+        printf("testXmlwriterFilename:"
+        "Error at xmlTextWriterStartElement\n");
+        return False;
+    }
+
     while((cur_director = episode_to_write->directors[++i])) {
-    
-        /* Write the "director" element */
-        rc = xmlTextWriterStartElement(writer, BAD_CAST "director");
-        if (rc < 0) {
-            printf("testXmlwriterFilename: Error at xmlTextWriterStartElement\n");
-            return False;
-        }
-    
-        rc = xmlTextWriterWriteFormatString(writer, "%s", 
+        rc = xmlTextWriterWriteFormatRaw(writer, " / %s",
         cur_director);
         if (rc < 0) {
             printf("testXmlwriterFilename:"
@@ -397,26 +406,38 @@ MYBOOL write_episode(episode *episode_to_write,
             return False;
         }
         
-        /* Close the element named "director" */
-        rc = xmlTextWriterEndElement(writer);
-        if (rc < 0) {
-            printf("testXmlwriterFilename: Error at xmlTextWriterEndElement\n");
-            return False;
-        }
     }
+
+    /* Close the element named "director" */
+    rc = xmlTextWriterEndElement(writer);
+    if (rc < 0) {
+        printf("testXmlwriterFilename: Error at xmlTextWriterEndElement\n");
+        return False;
+    }
+
 
     i = -1;
 
+
+    
+    /* Write the "actor" element */
+    rc = xmlTextWriterStartElement(writer, BAD_CAST "actor");
+    if (rc < 0) {
+        printf("testXmlwriterFilename: Error at xmlTextWriterStartElement\n");
+        return False;
+    }
+    
+    rc = xmlTextWriterWriteFormatRaw(writer, "%s",
+            episode_to_write->actors[++i]);
+    if (rc < 0) {
+        printf("testXmlwriterFilename:"
+        "Error at xmlTextWriterStartElement\n");
+        return False;
+    }
+
     while((cur_actor = episode_to_write->actors[++i])) {
-    
-        /* Write the "actor" element */
-        rc = xmlTextWriterStartElement(writer, BAD_CAST "actor");
-        if (rc < 0) {
-            printf("testXmlwriterFilename: Error at xmlTextWriterStartElement\n");
-            return False;
-        }
-    
-        rc = xmlTextWriterWriteFormatString(writer, "%s", 
+
+        rc = xmlTextWriterWriteFormatRaw(writer, " / %s",
         cur_actor);
         if (rc < 0) {
             printf("testXmlwriterFilename:"
@@ -424,13 +445,13 @@ MYBOOL write_episode(episode *episode_to_write,
             return False;
         }
         
-        /* Close the element named "actor" */
-        rc = xmlTextWriterEndElement(writer);
-        if (rc < 0) {
-            printf("testXmlwriterFilename: Error at xmlTextWriterEndElement\n");
-            return False;
-        }
+    }
         
+    /* Close the element named "actor" */
+    rc = xmlTextWriterEndElement(writer);
+    if (rc < 0) {
+        printf("testXmlwriterFilename: Error at xmlTextWriterEndElement\n");
+        return False;
     }
     
 
@@ -445,7 +466,7 @@ MYBOOL write_episode(episode *episode_to_write,
     if (!strcmp(ep_backdrop,"N/A")) {
         ep_backdrop = "";
     }
-    rc = xmlTextWriterWriteFormatString(writer, "%s", 
+    rc = xmlTextWriterWriteFormatRaw(writer, "%s",
         ep_backdrop);
     if (rc < 0) {
         printf("testXmlwriterFilename: Error at xmlTextWriterStartElement\n");
@@ -469,7 +490,7 @@ MYBOOL write_episode(episode *episode_to_write,
             return False;
         }
     
-        rc = xmlTextWriterWriteFormatString(writer, "%s", 
+        rc = xmlTextWriterWriteFormatRaw(writer, "%s",
         cur_backdrop);
         if (rc < 0) {
             printf("testXmlwriterFilename:"
@@ -512,7 +533,7 @@ MYBOOL write_episode(episode *episode_to_write,
     
     xmlCleanupParser();
     xmlMemoryDump();
-    
+
     return True;
 }
 
