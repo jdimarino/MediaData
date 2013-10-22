@@ -34,6 +34,45 @@
 #if defined(LIBXML_WRITER_ENABLED) && defined(LIBXML_OUTPUT_ENABLED)
 
 /**
+ * null_check
+ * @episode_to_check: the episode to check for null values
+ * @series_info_to_check: the series info to check for null values
+ *
+ * Replaces null attributes with empty strings.
+ */
+void null_check(episode *episode_to_check,
+        series_information *series_info_to_check)
+{
+    /* Check episode */
+    episode_to_check->episode_name = episode_to_check->episode_name
+            ? episode_to_check->episode_name : "";
+    episode_to_check->episode_number = episode_to_check->episode_number
+            ? episode_to_check->episode_number : "";
+    episode_to_check->season_number = episode_to_check->season_number
+            ? episode_to_check->season_number : "";
+    episode_to_check->firstaired = episode_to_check->firstaired
+            ? episode_to_check->firstaired : "";
+    episode_to_check->overview = episode_to_check->overview
+            ? episode_to_check->overview : "";
+    episode_to_check->directors[0] = episode_to_check->directors[0]
+            ? episode_to_check->directors[0] : "";
+    episode_to_check->actors[0] = episode_to_check->actors[0]
+            ? episode_to_check->actors[0] : "";
+
+    /* Check series info */
+    series_info_to_check->series_ID = series_info_to_check->series_ID
+            ? series_info_to_check->series_ID : "";
+    series_info_to_check->series_name = series_info_to_check->series_name
+            ? series_info_to_check->series_name : "";
+    series_info_to_check->genre[0] = series_info_to_check->genre[0]
+            ? series_info_to_check->genre[0] : "";
+    series_info_to_check->mpaa = series_info_to_check->mpaa
+            ? series_info_to_check->mpaa : "";
+    series_info_to_check->runtime = series_info_to_check->runtime
+            ? series_info_to_check->runtime : "";
+}
+
+/**
 * write_episode
 * @episode_to_write: the episode to be written
 * @return: BOOL set to True if write was successful, False otherwise
@@ -49,6 +88,8 @@ MYBOOL write_episode(episode *episode_to_write,
     char *cur_genre, *cur_director, *cur_actor, *cur_backdrop;
     char *ep_backdrop;
     LIBXML_TEST_VERSION
+
+    null_check(episode_to_write, series_info_to_write);
 
     /* Create a new XmlWriter for path, with no compression. */
     writer = xmlNewTextWriterFilename(path, 0);
@@ -124,7 +165,9 @@ MYBOOL write_episode(episode *episode_to_write,
     }
 
     rc = xmlTextWriterWriteFormatRaw(writer, "%s%s - %s",
-            strtol(episode_to_write->episode_number, NULL, 10) < 10 ? "0" : "", episode_to_write->episode_number, episode_to_write->episode_name);
+            strtol(episode_to_write->episode_number, NULL, 10) < 10 ? "0" : "",
+                    episode_to_write->episode_number,
+                    episode_to_write->episode_name);
     if (rc < 0) {
         printf("testXmlwriterFilename: Error at xmlTextWriterStartElement\n");
         return False;
@@ -292,7 +335,8 @@ MYBOOL write_episode(episode *episode_to_write,
         /* Write the "genre" element */
         rc = xmlTextWriterStartElement(writer, BAD_CAST "genre");
         if (rc < 0) {
-            printf("testXmlwriterFilename: Error at xmlTextWriterStartElement\n");
+            printf("testXmlwriterFilename: "
+                    "Error at xmlTextWriterStartElement\n");
             return False;
         }
         
@@ -486,7 +530,8 @@ MYBOOL write_episode(episode *episode_to_write,
         /* Write the series_information "backdrop" element */
         rc = xmlTextWriterStartElement(writer, BAD_CAST "backdrop");
         if (rc < 0) {
-            printf("testXmlwriterFilename: Error at xmlTextWriterStartElement\n");
+            printf("testXmlwriterFilename: "
+                    "Error at xmlTextWriterStartElement\n");
             return False;
         }
     

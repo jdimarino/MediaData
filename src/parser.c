@@ -648,7 +648,8 @@ series_information* parse_series_info_aux(xmlDoc *series_doc)
                         (char*)xmlNodeGetContent(cur_ser_node);
                     retrieve_series_backdrops(series_info);
                     in_place_adjust_series_info(series_info);
-                } else if (strcmp((char*)cur_ser_node->name, "SeriesName") == 0) {
+                } else if (strcmp((char*)cur_ser_node->name, "SeriesName")
+                        == 0) {
                     series_info->series_name = 
                     (char *)xmlNodeGetContent(cur_ser_node);
                 } else if (strcmp((char*)cur_ser_node->name, "Genre") == 0) {
