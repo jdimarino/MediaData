@@ -341,18 +341,19 @@ MYBOOL write_season(series* parsed_series, char *season_num,
     }
     
     num_episodes = parsed_series->seasons[i]->num_episodes;
-    
+
     /* Determine index of banners for specified season number */
     k= -1;
     while (parsed_series->series_info->season_number_index[++k] &&
         (strcmp(season_num, parsed_series->series_info->
-        season_number_index[++k])));
+        season_number_index[k])));
     if (k == num_season_banners) {
-        printf("Warning: Unable to find season banner for season %s\n", 
+        printf("Warning: Unable to find season banner for season %s\n",
             season_num);
         k = -1;
     }
-    
+
+
     if (episode_num) {
         /* Determine index for specified episode number */
         j = -1;
@@ -394,6 +395,7 @@ MYBOOL write_season(series* parsed_series, char *season_num,
     }
     free(season_path);
     
+    /* Complete the series */
     if (c) {
         for (++i; i < num_seasons; i++) {
             num_episodes = parsed_series->seasons[i]->num_episodes;
@@ -432,7 +434,7 @@ MYBOOL write_season(series* parsed_series, char *season_num,
             free(season_path);
         }
     }
-    
+
     return True;
 }
 
