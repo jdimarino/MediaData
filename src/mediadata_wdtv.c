@@ -49,14 +49,33 @@ char* parse_path(episode *episode, char* series_title, char* path,
     char* episode_path = (char*)calloc((MAX_FN_LEN+MAX_DIR_LEN),sizeof(char));
     char* cur_string = (char*)malloc(2*sizeof(char));
     char* slash = "/";
+    char* valid_series_title = (char*)calloc(MAX_FN_LEN,sizeof(char));
     char cur;
     int i = 0;
+    int j = 0;
+    int k = 0;
+    char c;
     MYBOOL en_less_than_nine = strlen(episode_num) == 1 ? True : False;
     MYBOOL sn_less_than_nine = strlen(season_num) == 1 ? True : False;
     
     char* zero_episode_num = (char*)malloc(strlen(episode_num)+2*sizeof(char));
     char* zero_season_num = (char*)malloc(strlen(season_num)+2*sizeof(char));
     
+    /* Replace invalid filename characters
+     * < > : " / \ | ? * */
+    while(series_title[j]) {
+        c = series_title[j];
+        if (series_title[j-1] != ' ' && c == ':' && series_title[j+1] == ' ') {
+            valid_series_title[k++] = ' ';
+            valid_series_title[k++] = '-';
+        } else if (c == '<' || c == '>' || c == ':' || c == '"' || c == '/'
+                || c == '\\' || c == '|' || c == '?' || c == '*')
+            valid_series_title[k++] = '_';
+        else
+            valid_series_title[k++] = series_title[j];
+        j++;
+    }
+
     sprintf(zero_episode_num, "%d%s", 0, episode_num);
     sprintf(zero_season_num, "%d%s", 0, season_num);
     /* Parse user-specified filename format */
@@ -118,7 +137,7 @@ char* parse_path(episode *episode, char* series_title, char* path,
                 i++;
             } else if (format[i]=='T') {
                 /* place show title here */
-                strcat(episode_fn, series_title);
+                strcat(episode_fn, valid_series_title);
                 i++;
             } else {
                 /* Place + here */
@@ -140,6 +159,7 @@ char* parse_path(episode *episode, char* series_title, char* path,
         free(episode_fn);
         free(episode_path);
         free(cur_string);
+        free(valid_series_title);
         return NULL;
     }
     #endif
@@ -151,6 +171,7 @@ char* parse_path(episode *episode, char* series_title, char* path,
         free(episode_fn);
         free(episode_path);
         free(cur_string);
+        free(valid_series_title);
         return NULL;
     }
     
@@ -165,6 +186,7 @@ char* parse_path(episode *episode, char* series_title, char* path,
     free(zero_season_num);
     free(episode_fn);
     free(cur_string);
+    free(valid_series_title);
     
     return episode_path;
 }
