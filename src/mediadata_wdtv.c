@@ -187,7 +187,7 @@ char* parse_path(episode *episode, char* series_title, char* path,
     free(episode_fn);
     free(cur_string);
     free(valid_series_title);
-    
+
     return episode_path;
 }
 
@@ -323,8 +323,8 @@ MYBOOL write_ep(series *parsed_series, char *season_num,
     strcat(file_path2, ".jpg");
     write_episode(ep, series_info, file_path);
     
-    
-    
+
+
     if (k != -1)
         download_url(parsed_series->series_info->season_banners[k][0], 
             file_path2);
@@ -516,7 +516,7 @@ void write_series(series* parsed_series, char *path, char *format)
 #ifdef CLI
 int main(int argc, char **argv)
 {
-    int i, j;
+    int i, j, cnt;
     char cur, runner;
     int opt;
     char  *s_num, *e_num;
@@ -554,7 +554,7 @@ int main(int argc, char **argv)
                 exit(EXIT_FAILURE);
         }
     }
-    
+
     if (!pstr) {
         printf("Expected valid argument(s). Try again...\n");
         exit(EXIT_FAILURE);
@@ -565,14 +565,17 @@ int main(int argc, char **argv)
     }
 
     i=0;
+    cnt=0;
     /* Replace "%20" with spaces in path */
     while ((cur = output_dir[i++])!='\0') {
         if (cur == '%') {
             if (output_dir[i]=='2') {
                 if (output_dir[i+1]=='0') {
                     output_dir[i-1] = ' ';
+                    cnt++;
                     j = i;
-                    while ((runner = output_dir[j])!='\0') {
+                    while ((runner = output_dir[j])!='\0'
+                            && j < strlen(output_dir)) {
                         output_dir[j] = output_dir[j+2];
                         output_dir[j+1] = output_dir[j+3];
                         j+=2;
@@ -581,16 +584,19 @@ int main(int argc, char **argv)
             }
         }
     }
+    output_dir[i-cnt*2+1] = '\0';
 
     i = 0;
+    cnt=0;
     /* Replace "%20" with spaces in format */
     while ((cur = format[i++])!='\0') {
         if (cur == '%') {
             if (format[i]=='2') {
                 if (format[i+1]=='0') {
                     format[i-1] = ' ';
+                    cnt++;
                     j = i;
-                    while ((runner = format[j])!='\0') {
+                    while ((runner = format[j])!='\0' && j < strlen(format)) {
                         format[j] = format[j+2];
                         format[j+1] = format[j+3];
                         j+=2;
@@ -599,6 +605,7 @@ int main(int argc, char **argv)
             }
         }
     }
+    format[i-cnt*2+1] = '\0';
 
     if (s_num && e_num && !complete) {
         write_ep(parsed_series, s_num, e_num, output_dir, format);
@@ -609,7 +616,7 @@ int main(int argc, char **argv)
     } else {
         write_series(parsed_series, output_dir, format);
     }
-    
+
     free_series(parsed_series);
     
     exit(EXIT_SUCCESS);
