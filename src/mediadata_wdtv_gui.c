@@ -128,7 +128,7 @@ void button_clicked(GtkWidget *widget, gpointer data)
     if (!(strcmp(path,""))) {
         sprintf(path, "./");
         #if defined(__MINGW32__) || defined(WIN32)
-        sprintf(path, "%%CD%%");
+        sprintf(path, "\"%%CD%%\"");
         #endif
     }
 
