@@ -584,7 +584,6 @@ int main(int argc, char **argv)
             }
         }
     }
-    output_dir[i-cnt*2+1] = '\0';
 
     i = 0;
     cnt=0;
@@ -605,7 +604,6 @@ int main(int argc, char **argv)
             }
         }
     }
-    format[i-cnt*2+1] = '\0';
 
     if (s_num && e_num && !complete) {
         write_ep(parsed_series, s_num, e_num, output_dir, format);

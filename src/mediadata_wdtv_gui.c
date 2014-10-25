@@ -175,7 +175,7 @@ void button_clicked(GtkWidget *widget, gpointer data)
         sprintf(cmd, 
             "%smediadata_wdtv -i %s %s -l %s -s %s -e %s -c -o %s -f %s", cwd,
             series_ID, dvd_order, abrev, season_num, episode_num, path, format);
-    } else if (season_num && !(strcmp(episode_num,"")) && complete) {
+    } else if (strcmp(season_num,"") && !(strcmp(episode_num,"")) && complete) {
         sprintf(cmd, "%smediadata_wdtv -i %s %s -l %s -s %s -c -o %s -f %s",
             cwd, series_ID, dvd_order, abrev, season_num, path, format);
     } else {
