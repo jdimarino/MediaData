@@ -1,14 +1,24 @@
 ifeq ($(OS),Windows_NT)
 	GUI_CFLAGS = -Wl,--export-all-symbols -g -pedantic -ansi -Wall \
 		-finput-charset=UTF-8
+	CLI_CFLAGS = -DCLI -g -pedantic -ansi -Wall -finput-charset=UTF-8 `pkg-config \
+	--cflags libcurl libxml-2.0`
 else
-	GUI_CFLAGS = -Wl,--export-dynamic -g -pedantic -ansi -Wall \
+    UNAME_S := $(shell uname -s)
+    ifeq ($(UNAME_S),Linux)
+        GUI_CFLAGS = -Wl,--export-dynamic -g -pedantic -ansi -Wall \
 		-finput-charset=UTF-8
+		CLI_CFLAGS = -DCLI -g -pedantic -ansi -Wall -finput-charset=UTF-8 `pkg-config \
+		--cflags libcurl libxml-2.0`
+    endif
+    ifeq ($(UNAME_S),Darwin)
+        GUI_CFLAGS = -g -pedantic -Wall
+    	CLI_CFLAGS = -DCLI -g -pedantic -Wall `pkg-config \
+		--cflags libcurl libxml-2.0`
+    endif
 endif
 
 CC = gcc
-CLI_CFLAGS = -DCLI -g -pedantic -ansi -Wall -finput-charset=UTF-8 `pkg-config \
-	--cflags libcurl libxml-2.0`
 CLI_LDFLAGS = `pkg-config --libs libcurl libxml-2.0` -lm
 CLI_OBJECTS = mediadata_wdtv.o parser.o writer.o
 CLI_SOURCES = mediadata_wdtv.c parser.c writer.c
