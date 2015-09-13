@@ -367,7 +367,8 @@ MYBOOL retrieve_series_backdrops(series_information *series_info)
         wide_season_number_index[j] = NULL;
     }
     
-    sprintf(url, "http://thetvdb.com/data/series/%s/banners.xml", series_ID);
+    sprintf(url, "http://thetvdb.com/api/3D32B0AB86EA0BB3/series/%s/banners.xml"
+            , series_ID);
     /* parse the file and get the first DOM */
     doc = xmlReadFile(url, NULL, XML_PARSE_NOERROR);
     
@@ -511,7 +512,8 @@ series_information* retrieve_series_info(char *series_ID)
     int ser_elems, i, j, genre_index;
     char *url = (char*)malloc(MAX_URL_LEN*sizeof(char)); char *pch;
 
-    sprintf(url, "http://thetvdb.com/data/series/%s", series_ID);
+    sprintf(url, "http://thetvdb.com/api/3D32B0AB86EA0BB3/series/%s",
+            series_ID);
     
     /* parse the file and get the first DOM */
     doc = xmlReadFile(url, NULL, XML_PARSE_NOERROR);
